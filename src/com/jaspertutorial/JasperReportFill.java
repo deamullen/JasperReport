@@ -70,18 +70,11 @@ public class JasperReportFill {
                    sourceFileName,
                    parameters,
                    csvSource);
-       } catch (JRException e) {
-           e.printStackTrace();
-       }
-
-       try {
            OutputStream output = new FileOutputStream(new File("path and name of the pdf"));
-
-           //exports the outputstream into a pdf file.
            JasperExportManager.exportReportToPdfStream(print, output);
-       } catch (FileNotFoundException e) {
-           e.printStackTrace();
        } catch (JRException e) {
+           e.printStackTrace();
+       } catch (FileNotFoundException e) {
            e.printStackTrace();
        }
    }
