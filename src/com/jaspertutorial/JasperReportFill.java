@@ -28,20 +28,37 @@ import net.sf.jasperreports.engine.type.SortOrderEnum;
  * @author Andrea
  */
 public class JasperReportFill {
-        
+    
+   final static String ENCODING = "UTF-16";
+    
    public static void main(String[] args) {
        
        //jrxml compiled file (. jasper extension) is used as sourceFile here
-       //this is your Jasper report template created in the Jasper Studio
-       String sourceFileName = "Blank.jasper";
+   //this is your Jasper report template created in the Jasper Studio
+   String sourceFileName = "Blank.jasper";
+   String cscFileName = "export_VOLDDLGSTS.csv";
+   
+   //importing data and filling the jasper report template
+   JRCsvDataSource csvSource = fillReport(cscFileName);
+   
+   Map<String, Object> parameters = setSortParameter();
+   
+   // begin--unnecessary line
+   printColumnNames(csvSource);
+   // end--unnecessary line
+
+       exportReport(sourceFileName, csvSource, parameters);
        
+   }
+
+   private static JRCsvDataSource fillReport(String cscFileName) {
        //JRCsvDataSource is used to import .csv files as data source
        JRCsvDataSource csvSource = null;
-       
+
        try {
            //some files requite special encoding in order to imported(i.e UTF-8 or UTF-16
-           csvSource = new JRCsvDataSource(new File("C:\\Users\\Andrea\\Desktop\\export_VOLDDLGSTS.csv"), "UTF-16");
-           
+           csvSource = new JRCsvDataSource(new File(cscFileName), ENCODING);
+
            //first roll of csv file is treated as column header
            csvSource.setUseFirstRowAsHeader(true);
            csvSource.setFieldDelimiter('|');
@@ -54,15 +71,7 @@ public class JasperReportFill {
        catch (IOException e) {
            e.printStackTrace();
        }
-       
-       Map<String, Object> parameters = setSortParameter();
-       
-       // begin--unnecessary line
-       printColumnNames(csvSource);
-       // end--unnecessary line
-
-       exportReport(sourceFileName, csvSource, parameters);
-       
+       return csvSource;
    }
    
    /**
@@ -101,9 +110,11 @@ public class JasperReportFill {
                    csvSource);
            OutputStream output = new FileOutputStream(new File("C:\\Users\\Andrea\\Desktop\\report.pdf"));
            JasperExportManager.exportReportToPdfStream(print, output);
-       } catch (JRException e) {
+       } 
+       catch (JRException e) {
            e.printStackTrace();
-       } catch (FileNotFoundException e) {
+       } 
+       catch (FileNotFoundException e) {
            e.printStackTrace();
        }
    }
