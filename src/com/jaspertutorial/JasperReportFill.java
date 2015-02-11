@@ -5,21 +5,27 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRCsvDataSource;
+import net.sf.jasperreports.engine.design.JRDesignSortField;
+import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
+import net.sf.jasperreports.engine.type.SortOrderEnum;
 
 /**
  * Jasper report tutorial
  * Modified code from http://www.tutorialspoint.com/jasper_reports/jasper_view_and_print_reports.htm
  * @author Andrea
- *
  */
 public class JasperReportFill {
         
@@ -34,12 +40,13 @@ public class JasperReportFill {
        
        try {
            //some files requite special encoding in order to imported(i.e UTF-8 or UTF-16
-           csvSource = new JRCsvDataSource(new File("path to file being imported"), "UTF-16");
+           csvSource = new JRCsvDataSource(new File("C:\\Users\\Andrea\\Desktop\\export_VOLDDLGSTS.csv"), "UTF-16");
            
            //first roll of csv file is treated as column header
            csvSource.setUseFirstRowAsHeader(true);
            csvSource.setFieldDelimiter('|');
            csvSource.setRecordDelimiter("\r\n");
+
        } 
        catch (FileNotFoundException e1) {
            e1.printStackTrace();
@@ -48,12 +55,35 @@ public class JasperReportFill {
            e.printStackTrace();
        }
        
+       Map<String, Object> parameters = setSortParameter();
+       
        // begin--unnecessary line
        printColumnNames(csvSource);
        // end--unnecessary line
+
+       exportReport(sourceFileName, csvSource, parameters);
        
-       exportReport(sourceFileName, csvSource);
+   }
+   
+   /**
+    * this method is used to sort the DAY_ID field in Ascending order.
+    * 
+    * This method can easily be changed to sort other fields in jasper report
+    * @return
+    */
+   private static Map<String, Object> setSortParameter() {
+       Map<String, Object> parameters = new HashMap<String, Object>();
+       List<JRSortField> sortList = new ArrayList<JRSortField>();
+       JRDesignSortField sortField = new JRDesignSortField();
        
+       //the field that is being sorted
+       sortField.setName("DAY_ID");
+       sortField.setOrder(SortOrderEnum.ASCENDING);
+       sortField.setType(SortFieldTypeEnum.FIELD);
+       sortList.add(sortField);
+
+       parameters.put(JRParameter.SORT_FIELDS, sortList);
+       return parameters;
    }
    
    /**
@@ -61,16 +91,15 @@ public class JasperReportFill {
     * @param sourceFileName
     * @param csvSource
     */
-   private static void exportReport(String sourceFileName, JRCsvDataSource csvSource) {
-       //at this moment, it is unclear why the parameters map is necessary in order to fill the report
-       Map<String, Object> parameters = new HashMap<String, Object>();
+   private static void exportReport(String sourceFileName, JRCsvDataSource csvSource, Map<String, Object> parameters) {
+
        JasperPrint print = null;
        try {
            print = JasperFillManager.fillReport(
                    sourceFileName,
                    parameters,
                    csvSource);
-           OutputStream output = new FileOutputStream(new File("path and name of the pdf"));
+           OutputStream output = new FileOutputStream(new File("C:\\Users\\Andrea\\Desktop\\report.pdf"));
            JasperExportManager.exportReportToPdfStream(print, output);
        } catch (JRException e) {
            e.printStackTrace();
