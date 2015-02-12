@@ -34,21 +34,20 @@ public class JasperReportFill {
    public static void main(String[] args) {
        
        //jrxml compiled file (. jasper extension) is used as sourceFile here
-   //this is your Jasper report template created in the Jasper Studio
-   String sourceFileName = "Blank.jasper";
-   String cscFileName = "export_VOLDDLGSTS.csv";
-   
-   //importing data and filling the jasper report template
-   JRCsvDataSource csvSource = fillReport(cscFileName);
-   
-   Map<String, Object> parameters = setSortParameter();
-   
-   // begin--unnecessary line
-   printColumnNames(csvSource);
-   // end--unnecessary line
+       //this is your Jasper report template created in the Jasper Studio
+       String sourceFileName = "Blank.jasper";
+       String cscFileName = "export_VOLDDLGSTS.csv";
+
+       //importing data and filling the jasper report template
+       JRCsvDataSource csvSource = fillReport(cscFileName);
+
+       Map<String, Object> parameters = setSortParameter();
+
+       // begin--unnecessary line
+       printColumnNames(csvSource);
+       // end--unnecessary line
 
        exportReport(sourceFileName, csvSource, parameters);
-       
    }
 
    private static JRCsvDataSource fillReport(String cscFileName) {
